@@ -1,0 +1,9 @@
+flask
+joblib
+scikit-learn
+numpy
+scipy
+pdfplumber
+pytesseract
+Pillow
+gunicorn
