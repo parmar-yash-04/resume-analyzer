@@ -182,4 +182,5 @@ def index():
     return render_template('index.html', prediction=prediction, filename=filename, ats_score=ats_score)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+
