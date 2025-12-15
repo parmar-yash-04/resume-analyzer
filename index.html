@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer & ATS Scorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Resume Analyzer</h1>
+            <p>Upload a resume to predict job category and calculate ATS score</p>
+        </header>
+
+        <main>
+            <form method="POST" action="/" enctype="multipart/form-data">
+                <div class="form-group file-upload-wrapper">
+                    <label for="resume_file" class="file-upload-label">
+                        <div class="upload-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <span class="upload-text">Click to upload or drag and drop</span>
+                        <span class="upload-hint">PDF, PNG, JPG or JPEG</span>
+                    </label>
+                    <input type="file" id="resume_file" name="resume_file" accept=".pdf, .png, .jpg, .jpeg" required
+                        onchange="updateFileName(this)">
+                    <div id="file-name-display" class="file-name"></div>
+                </div>
+                <button type="submit" class="btn-submit">Analyze Resume</button>
+            </form>
+
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            {% if prediction %}
+            <div class="results-container">
+                {% if filename %}
+                <p class="analyzed-file">Analyzed: {{ filename }}</p>
+                {% endif %}
+
+                <div class="result-card">
+                    <h2>Predicted Job Role</h2>
+                    <div class="prediction-badge">{{ prediction }}</div>
+                </div>
+
+                <div class="result-card ats-card">
+                    <h2>ATS Score</h2>
+                    <div class="ats-score-container">
+                        <div class="circular-chart" data-percent="{{ ats_score }}">
+                            <svg viewBox="0 0 36 36" class="circular-chart-svg">
+                                <path class="circle-bg" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" stroke-dasharray="{{ ats_score }}, 100" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage">{{ ats_score }}%</text>
+                            </svg>
+                        </div>
+                        <div class="ats-feedback">
+                            <div class="score-text">
+                                <span class="score-number">{{ ats_score }}</span> / 100
+                            </div>
+                            {% if ats_score >= 90 %}
+                            <p class="feedback-excellent"><strong>Outstanding!</strong> Your resume is highly optimized
+                                for this role.</p>
+                            {% elif ats_score >= 80 %}
+                            <p class="feedback-excellent"><strong>Excellent!</strong> Your resume matches the job
+                                description very well.</p>
+                            {% elif ats_score >= 60 %}
+                            <p class="feedback-good"><strong>Good.</strong> You have a solid foundation, but could add
+                                more specific keywords.</p>
+                            {% elif ats_score >= 40 %}
+                            <p class="feedback-average"><strong>Average.</strong> Consider adding more relevant skills
+                                and sections.</p>
+                            {% else %}
+                            <p class="feedback-needs-improvement"><strong>Needs Improvement.</strong> Your resume may be
+                                missing key keywords or sections.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>Powered by Machine Learning</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateFileName(input) {
+            const fileNameDisplay = document.getElementById('file-name-display');
+            if (input.files && input.files.length > 0) {
+                fileNameDisplay.textContent = input.files[0].name;
+                fileNameDisplay.style.display = 'block';
+            } else {
+                fileNameDisplay.textContent = '';
+                fileNameDisplay.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
